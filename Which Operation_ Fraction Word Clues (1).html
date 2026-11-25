@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Which Operation? Fraction Word Clues</title>
+<style>
+:root{--bg:#F5F7FC;--card:#fff;--ink:#1D2540;--soft:#5E6A8A;--line:#DDE3F2;--blue:#3B6CF0;--add:#1F9D6B;--sub:#E0572F;--mul:#7B54E0;--div:#D99A0B;--ok:#1F9D6B;--bad:#D6453D;--hl:#FFF1B8;box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10152A;--card:#1A2140;--ink:#EDF0FB;--soft:#9BA6C9;--line:#2C3560;--hl:#5B4A12}}
+:root[data-theme="dark"]{--bg:#10152A;--card:#1A2140;--ink:#EDF0FB;--soft:#9BA6C9;--line:#2C3560;--hl:#5B4A12}
+*{box-sizing:border-box}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.45}
+.wrap{max-width:860px;margin:0 auto;padding:18px 16px 230px}
+h1{font-size:clamp(22px,4vw,30px);margin:0}
+.sub{color:var(--soft);margin:4px 0 14px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.tab,.btn,.opbtn{font:inherit;font-weight:700;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);padding:10px 16px;cursor:pointer}
+.tab.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:18px;margin:12px 0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stat{border-radius:12px;padding:8px;text-align:center;color:#fff;font-weight:800;font-size:13px}
+.stat small{display:block;font-weight:600;opacity:.9}
+.bar{height:6px;background:rgba(255,255,255,.35);border-radius:9px;margin-top:5px}.bar i{display:block;height:100%;background:#fff;border-radius:9px;width:0}
+.add{--c:var(--add)}.sub{--c:var(--sub)}.mul{--c:var(--mul)}.div{--c:var(--div)}
+.stat.add,.opbtn.add.on{background:var(--add)}.stat.sub{background:var(--sub)}.stat.mul{background:var(--mul)}.stat.div{background:var(--div)}
+.opgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.op{border:2px solid var(--c);border-radius:16px;padding:14px;background:var(--card)}
+.op h3{margin:0;color:var(--c);font-size:20px}.op .res{font-size:13px;color:var(--soft)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chip{background:var(--c);color:#fff;border-radius:999px;padding:4px 10px;font-size:13px;font-weight:700}
+.ex{font-size:14px;margin:6px 0 0;padding-left:10px;border-left:3px solid var(--c)}
+mark{background:var(--hl);color:inherit;border-radius:4px;padding:0 3px;font-weight:800}
+.flash{min-height:190px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:20px;border:3px solid var(--c,var(--blue));background:var(--card);padding:20px;cursor:pointer;font-size:clamp(22px,5vw,32px);font-weight:800;user-select:none}
+.flash .back{font-size:17px;font-weight:600}.flash .back b{display:block;font-size:30px;color:var(--c)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btn.go{background:var(--ok);border-color:var(--ok);color:#fff}.btn.no{background:var(--sub);border-color:var(--sub);color:#fff}.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff}
+.opbtn{flex:1;min-width:110px;font-size:17px}.opbtn.add{border-color:var(--add)}.opbtn.sub{border-color:var(--sub)}.opbtn.mul{border-color:var(--mul)}.opbtn.div{border-color:var(--div)}
+.opbtn:hover:not(:disabled){filter:brightness(.95);transform:translateY(-1px)}
+.sent{font-size:clamp(18px,3.4vw,22px);line-height:2}
+.w{padding:2px 3px;border-radius:6px;cursor:pointer}.w:hover{background:var(--line)}.w.sel{background:var(--hl);outline:2px solid var(--div)}
+.w.clue{background:var(--hl);font-weight:800;outline:2px solid var(--ok)}
+.fb{margin-top:10px;padding:10px 12px;border-radius:12px;font-weight:600;display:none}.fb.show{display:block}.fb.ok{background:rgba(31,157,107,.15);color:var(--ok)}.fb.bad{background:rgba(214,69,61,.15);color:var(--bad)}
+.bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}
+.bin{border:2px dashed var(--c);border-radius:14px;padding:10px;min-height:120px;cursor:pointer}
+.bin h4{margin:0 0 6px;color:var(--c)}.bin .chip{display:inline-block;margin:2px}
+.pool{display:flex;flex-wrap:wrap;gap:8px;min-height:44px}
+.pc{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:7px 14px;font-weight:700;cursor:grab;color:var(--ink)}.pc.sel{border-color:var(--blue);background:var(--blue);color:#fff}
+.shake{animation:sh .35s}@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.meter{height:10px;background:var(--line);border-radius:9px;overflow:hidden}.meter i{display:block;height:100%;background:var(--blue);width:0;transition:width .3s}
+.big{font-size:42px;text-align:center}.hide{display:none}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.15;margin:0 3px;font-size:.92em;font-weight:700}.fr>span{padding:0 3px}.fr>span:first-child{border-bottom:2px solid currentColor}
+#owl{position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:row-reverse;align-items:flex-end;gap:8px;z-index:9;max-width:min(94vw,420px);pointer-events:none}#owl>*{pointer-events:auto}
+#ob2{font-size:60px;cursor:pointer;line-height:1;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}#ob2.cheer{animation:bn .6s 3}@keyframes bn{50%{transform:translateY(-14px) rotate(-8deg)}}
+#bub{background:var(--card);border:3px solid var(--blue);border-radius:18px;padding:10px 14px;font-size:14.5px;box-shadow:0 8px 24px rgba(0,0,0,.2);max-height:48vh;overflow:auto;cursor:pointer}#bub.happy{border-color:var(--ok)}#bub.oops{border-color:var(--sub)}#bub b.t{display:block;font-size:16px;margin-bottom:3px}
+@media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Which Operation? Fraction Word Clues</h1>
+<p class="sub">Read the clue words in a fraction problem and decide: add, subtract, multiply, or divide?</p>
+<div class="card"><div class="stats" id="stats"></div></div>
+<div class="tabs" id="tabs"></div>
+<div id="view"></div>
+<div id="owl"><div id="ob2" title="Tap me for a tip!">🦉</div><div id="bub" title="Tap to hide"></div></div>
+</div>
+<script>
+const OPS={add:{n:'Add',s:'+',r:'sum',c:'add',d:'put parts together'},sub:{n:'Subtract',s:'−',r:'difference',c:'sub',d:'take away or compare'},mul:{n:'Multiply',s:'×',r:'product',c:'mul',d:'equal groups or a fraction of a number'},div:{n:'Divide',s:'÷',r:'quotient',c:'div',d:'share or split equally'}};
+const D=[
+['altogether','add','Mia ran 1/2 mile, then 1/3 mile. How far did she run altogether?'],
+['in all','add','Leo ate 1/4 of a pizza and Sam ate 2/3. How much pizza did they eat in all?'],
+['total','add','A recipe uses 3/4 cup of milk and 1/2 cup of cream. What is the total amount of liquid?'],
+['combined','add','Two ropes are 5/6 yard and 1/3 yard long. What is their combined length?'],
+['sum','add','What is the sum of 2/5 and 1/2?'],
+['more than','add','Ana walked 1/4 mile. Ben walked 1/3 mile more than Ana. How far did Ben walk?'],
+['left','sub','Sofia had 7/8 of a ribbon. She used 1/4. How much is left?'],
+['remaining','sub','A jug held 5/6 gallon. After pouring 1/2 gallon, how much water is remaining?'],
+['difference','sub','What is the difference between 3/4 and 2/3?'],
+['how much more','sub','Tom needs 5/6 cup of flour and has 1/2 cup. How much more does he need?'],
+['less than','sub','Rita’s plant is 2/3 foot tall. Max’s plant is 1/4 foot less than Rita’s. How tall is Max’s plant?'],
+['gave away','sub','Dan had 9/10 of a sandwich and gave away 2/5. How much does he have now?'],
+['of','mul','Lucy ate 1/2 of 3/4 of a pie. What part of the whole pie did she eat?'],
+['times','mul','A path is 3/5 mile long. Jo walks it 4 times. How far does Jo walk?'],
+['product','mul','What is the product of 2/3 and 6?'],
+['groups of','mul','There are 5 groups of 3/8 pound of nuts. How many pounds in all the groups?'],
+['each','mul','Each of 6 friends drinks 2/3 cup of juice. How much juice do they drink?'],
+['twice','mul','Pia ran 3/4 mile. Kai ran twice as far. How far did Kai run?'],
+['shared equally','div','4 friends shared 1/2 of a pizza equally. What fraction of the pizza does each friend get?'],
+['split equally','div','Ms. Ruiz split 3 pounds of clay equally among 4 students. How much clay does each student get?'],
+['quotient','div','What is the quotient of 1/3 divided by 2?'],
+['cut into equal pieces','div','A 3/4-yard ribbon is cut into equal pieces of 1/8 yard. How many pieces are there?'],
+['per','div','A hose fills 2/3 of a tank in 4 minutes. How much of the tank is filled per minute?'],
+['divided into','div','1/2 gallon of juice is divided into 3 equal cups. How much juice is in each cup?']
+];
+const KEY='fracOpVocab1';let S={known:{},best:0};
+try{S=Object.assign(S,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=s=>document.querySelector(s),sh=a=>[...a].sort(()=>Math.random()-.5);
+const fr=t=>t.replace(/(\d+)\/(\d+)/g,'<span class="fr"><span>$1</span><span>$2</span></span>');
+const hi=(t,w)=>{const i=t.toLowerCase().indexOf(w.toLowerCase());return fr(i<0?t:t.slice(0,i)+'<mark>'+t.slice(i,i+w.length)+'</mark>'+t.slice(i+w.length))};
+const TIP={add:'adding means putting parts together. With different denominators, first rename the fractions with a common denominator (1/2 = 2/4), then add the tops.',sub:'subtracting means taking away or finding how much more. With different denominators, rename the fractions with a common denominator first, then subtract the tops.',mul:'multiplying means equal groups, or “a fraction of” a number. Multiply the tops, then multiply the bottoms.',div:'dividing means sharing or splitting equally. Each share gets smaller than the whole amount.'};
+const P=()=>['Hoot hoot! Great job!','Wing-tastic!','Owl-some work!','You’re soaring!'][Math.random()*4|0];
+const owl=(m,h)=>{const b=$('#bub'),o=$('#ob2');b.className=m;b.innerHTML=fr(h);b.style.display='block';o.classList.remove('cheer');if(m=='happy'){void o.offsetWidth;o.classList.add('cheer')}};
+const fix=(d,c)=>{const o=OPS[d[1]],x=OPS[c];return '<b class="t">Let’s learn from this! 🦉</b>You picked <b>'+x.n+'</b>, which is for '+x.d+'. But the clue <mark>'+d[0]+'</mark> tells us to <b>'+o.n.toLowerCase()+'</b>: '+o.d+'. The answer word is the <b>'+o.r+'</b>.<br><br><b>Remember:</b> '+TIP[d[1]]};
+const TIPS=['Clue words are like treasure maps. Find the word, then pick the operation!','“of” with fractions usually means multiply: 1/2 of 8 is 1/2 × 8.','“left” or “remaining” means something was taken away: subtract.','“altogether” and “in all” mean put the parts together: add.','“shared equally” means split into equal parts: divide.','Always read the whole sentence. “each” can be multiply or divide!'];
+const WELC={learn:'Hi, I’m Professor Hoot! 🦉 Read each operation card. The colored words are clues that tell you what to do. I’ll cheer when you get it right and explain when you don’t!',cards:'Flip each card. Tap “I know it” and I’ll celebrate, or “Still learning” and I’ll explain it step by step.',sort:'Tap a clue word, then tap its operation. If you miss, I’ll tell you why!',quiz:'Step 1: tap the clue word. Step 2: choose the operation. Let’s go!',words:'Learn the key fraction words! Tap a card to see its meaning, then press Test me.'};
+document.addEventListener('DOMContentLoaded',()=>{$('#ob2').onclick=()=>owl('',TIPS[Math.random()*TIPS.length|0]);$('#bub').onclick=()=>$('#bub').style.display='none'});
+const TABS=[['learn','Learn'],['cards','Flashcards'],['sort','Sort It'],['quiz','Quiz'],['words','Fraction Words']];let tab='learn';
+function stats(){$('#stats').innerHTML=Object.keys(OPS).map(k=>{const t=D.filter(d=>d[1]==k),n=t.filter(d=>S.known[d[0]]).length;return`<div class="stat ${k}">${OPS[k].s} ${OPS[k].n}<small>${n} of ${t.length} clues known</small><div class="bar"><i style="width:${n/t.length*100}%"></i></div></div>`}).join('')}
+function tabs(){$('#tabs').innerHTML=TABS.map(t=>`<button class="tab ${t[0]==tab?'on':''}" data-t="${t[0]}">${t[1]}</button>`).join('');document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{tab=b.dataset.t;go()})}
+function go(){tabs();stats();({learn,cards,sort,quiz,words})[tab]();if(tab=='learn')$('#view').innerHTML=fr($('#view').innerHTML);owl('',WELC[tab])}
+function learn(){$('#view').innerHTML='<div class="opgrid">'+Object.keys(OPS).map(k=>{const o=OPS[k],t=D.filter(d=>d[1]==k);return`<div class="op ${k}"><h3>${o.s} ${o.n}</h3><div class="res">Answer word: <b>${o.r}</b> · ${o.d}</div><div class="chips">${t.map(d=>`<span class="chip">${d[0]}</span>`).join('')}</div><div class="ex">${hi(t[0][2],t[0][0])}</div><div class="ex">${hi(t[1][2],t[1][0])}</div></div>`}).join('')+'</div><div class="card"><b>Tip:</b> “of” with fractions usually means <b>multiply</b> (1/2 of 8 = 1/2 × 8). “Each” and “per” can be multiply or divide — read the whole sentence!</div>'}
+let deck=[],di=0,flip=false,filt='all';
+function cards(){deck=sh(D.filter(d=>filt=='all'||d[1]==filt));di=0;flip=false;cardView()}
+function cardView(){const d=deck[di];if(!d){$('#view').innerHTML='<div class="card big">🎉<br>Deck finished!<div class="row" style="justify-content:center"><button class="btn pri" id="again">Shuffle again</button></div></div>';$('#again').onclick=cards;return}
+const o=OPS[d[1]];$('#view').innerHTML=`<div class="row">${['all',...Object.keys(OPS)].map(f=>`<button class="btn ${f==filt?'pri':''}" data-f="${f}">${f=='all'?'All':OPS[f].n}</button>`).join('')}</div><div class="meter" style="margin:10px 0"><i style="width:${di/deck.length*100}%"></i></div><div class="flash" id="fl" style="--c:var(--${o.c})">${flip?`<div class="back"><b>${o.s} ${o.n}</b>${hi(d[2],d[0])}<br><small>Answer word: ${o.r}</small></div>`:d[0]}</div><div class="sub" style="text-align:center">Tap the card to flip · ${di+1} of ${deck.length}</div><div class="row" style="justify-content:center"><button class="btn no" id="nk">Still learning</button><button class="btn go" id="kn">I know it</button></div>`;
+document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{filt=b.dataset.f;cards()});$('#fl').onclick=()=>{flip=!flip;cardView()};
+const nx=k=>{if(k)S.known[d[0]]=1;else delete S.known[d[0]];save();stats();di++;flip=false;cardView();const o=OPS[d[1]];k?owl('happy','<b class="t">'+P()+'</b>You know “'+d[0]+'”: it’s a clue for <b>'+o.n+'</b>!'):owl('oops','<b class="t">No worries, let’s learn it together! 🦉</b>“'+d[0]+'” is a clue for <b>'+o.n+'</b> ('+o.d+').<br>'+hi(d[2],d[0])+'<br><br><b>Remember:</b> '+TIP[d[1]])};$('#kn').onclick=()=>nx(1);$('#nk').onclick=()=>nx(0)}
+function sort(){const items=sh(D).slice(0,12);let sel=null,done=0;
+$('#view').innerHTML=`<div class="card"><b>Tap a clue word, then tap the operation it belongs to.</b><div class="pool" id="pool" style="margin-top:10px">${items.map((d,i)=>`<button class="pc" data-i="${i}" draggable="true">${d[0]}</button>`).join('')}</div></div><div class="bins">${Object.keys(OPS).map(k=>`<div class="bin ${k}" data-k="${k}"><h4>${OPS[k].s} ${OPS[k].n}</h4></div>`).join('')}</div><div class="fb" id="fb"></div><div class="row"><button class="btn pri" id="rs">New words</button></div>`;
+const place=(i,b)=>{const d=items[i],p=document.querySelector(`.pc[data-i="${i}"]`);if(!p)return;if(d[1]==b.dataset.k){p.remove();b.insertAdjacentHTML('beforeend',`<span class="chip">${d[0]}</span>`);S.known[d[0]]=1;save();stats();if(++done==items.length){const f=$('#fb');f.className='fb show ok';f.textContent='🎉 All sorted! Try the Quiz next.';owl('happy','<b class="t">🎉 All sorted! You’re a clue-word champion!</b>Next, try the Quiz and find the clue inside real fraction problems.')}else owl('happy','<b class="t">'+P()+'</b>“'+d[0]+'” goes with <b>'+OPS[d[1]].n+'</b>: '+OPS[d[1]].d+'.');sel=null}else{b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),400);const f=$('#fb');f.className='fb show bad';f.textContent=`Not quite — “${d[0]}” is a clue for ${OPS[d[1]].n.toLowerCase()}. Try again!`;owl('oops','<b class="t">Almost! 🦉</b>You put “'+d[0]+'” under <b>'+OPS[b.dataset.k].n+'</b>, which is for '+OPS[b.dataset.k].d+'. But “'+d[0]+'” is a clue for <b>'+OPS[d[1]].n+'</b>: '+OPS[d[1]].d+'. Try again!')}};
+document.querySelectorAll('.pc').forEach(p=>{p.onclick=()=>{document.querySelectorAll('.pc').forEach(x=>x.classList.remove('sel'));p.classList.add('sel');sel=+p.dataset.i};p.ondragstart=e=>e.dataTransfer.setData('t',p.dataset.i)});
+document.querySelectorAll('.bin').forEach(b=>{b.onclick=()=>{if(sel!==null)place(sel,b)};b.ondragover=e=>e.preventDefault();b.ondrop=e=>{e.preventDefault();place(+e.dataTransfer.getData('t'),b)}});$('#rs').onclick=sort}
+function quiz(){const Q=sh(D).slice(0,10);let i=0,sc=0,st=0,sel=null,ans=false;
+const draw=()=>{if(i>=Q.length){const stars=sc>=9?'⭐⭐⭐':sc>=7?'⭐⭐':sc>=5?'⭐':'💪';if(sc>S.best){S.best=sc;save()}owl(sc>=7?'happy':'',sc>=9?'<b class="t">🏆 Hoot-standing!</b>You really know your clue words!':sc>=7?'<b class="t">🌟 Great flying!</b>Review the clues you missed in Flashcards.':'<b class="t">Keep practicing! 💪</b>Visit Flashcards, then try again. You’ll improve every round!');$('#view').innerHTML=`<div class="card big">${stars}<br>You got ${sc} out of ${Q.length}<div class="sub">Best score: ${S.best} out of ${Q.length}</div><div class="row" style="justify-content:center"><button class="btn pri" id="rq">Play again</button></div></div>`;$('#rq').onclick=quiz;return}
+const d=Q[i];ans=false;sel=null;const ws=d[2].split(' ');
+$('#view').innerHTML=`<div class="card"><div class="meter"><i style="width:${i/Q.length*100}%"></i></div><p class="sub">Question ${i+1} of ${Q.length} · Score ${sc} · Streak 🔥 ${st}</p><p><b>Step 1:</b> Tap the clue word. <b>Step 2:</b> choose the operation.</p><div class="sent" id="sn">${ws.map((w,k)=>`<span class="w" data-k="${k}">${fr(w)}</span>`).join(' ')}</div><div class="row" id="ob">${Object.keys(OPS).map(k=>`<button class="opbtn ${k}" data-k="${k}">${OPS[k].s} ${OPS[k].n}</button>`).join('')}</div><div class="fb" id="fb"></div><div class="row"><button class="btn pri hide" id="nx">Next →</button></div></div>`;
+document.querySelectorAll('.w').forEach(w=>w.onclick=()=>{if(ans)return;document.querySelectorAll('.w').forEach(x=>x.classList.remove('sel'));w.classList.add('sel');sel=w.textContent.replace(/[^\w’']/g,'').toLowerCase()});
+document.querySelectorAll('.opbtn').forEach(b=>b.onclick=()=>{if(ans)return;const f=$('#fb');if(sel===null){f.className='fb show bad';f.textContent='Tap the clue word in the sentence first!';owl('oops','<b class="t">Hold on! 🦉</b>First tap the clue word, the word or phrase that tells you which operation to use. Look for words like “altogether”, “left”, “each” or “shared equally”.');return}
+ans=true;const ok=b.dataset.k==d[1],clueTap=d[0].toLowerCase().split(' ').some(x=>x.replace(/[^\w’']/g,'')==sel);if(ok){sc++;st++;S.known[d[0]]=1}else st=0;save();stats();
+$('#sn').innerHTML=hi(d[2],d[0]);f.className='fb show '+(ok?'ok':'bad');f.innerHTML=(ok?'✅ Correct! ':`❌ It’s ${OPS[d[1]].n.toLowerCase()}. `)+`The clue “${d[0]}” means ${OPS[d[1]].n.toLowerCase()} (${OPS[d[1]].r}).`+(clueTap?' 🎯 You found the clue word!':'');ok?owl('happy','<b class="t">'+(st>=3?'🔥 '+st+' in a row!':P())+'</b>“'+d[0]+'” means <b>'+OPS[d[1]].n+'</b> ('+OPS[d[1]].r+').'+(clueTap?' You found the clue word too, bonus hoot! 🎯':' Next time, tap the clue word too!')+'<br><br><b>Remember:</b> '+TIP[d[1]]):owl('oops',fix(d,b.dataset.k));document.querySelectorAll('.opbtn').forEach(x=>x.disabled=true);$('#nx').classList.remove('hide')});
+$('#nx')&&($('#nx').onclick=()=>{i++;draw()})};draw()}
+const W=[['numerator','The top number of a fraction. It tells how many parts we have.','3/4','3 is the numerator'],['denominator','The bottom number of a fraction. It tells how many equal parts make the whole.','3/4','4 is the denominator'],['unlike denominators','Fractions whose bottom numbers are different.','1/2 and 1/3','2 and 3 are different'],['common denominator','A shared bottom number we rename fractions to, so we can add or subtract them.','3/6 and 2/6','both have the denominator 6'],['equivalent fractions','Different fractions that name the same amount.','1/2 = 2/4','they show the same part of the whole'],['simplify','Rewrite a fraction with a smaller top and bottom, keeping the same value.','4/8 = 1/2','divide the top and bottom by 4'],['mixed number','A whole number and a fraction together.','1 1/2','1 whole and 1/2 more'],['improper fraction','A fraction whose top is greater than or equal to its bottom.','5/4','5 is greater than 4, so it is more than 1 whole']];
+function words(){let open={};
+const test=()=>{const Q=sh(W);let i=0,sc=0;const draw=()=>{if(i>=Q.length){owl(sc>=7?'happy':'',sc>=7?'<b class="t">🏆 Hoot-standing!</b>You know your fraction words!':'<b class="t">Keep going! 💪</b>Study the cards again, then retry.');$('#view').innerHTML='<div class="card big">'+(sc>=7?'🏆':'💪')+'<br>'+sc+' out of '+Q.length+'<div class="row" style="justify-content:center"><button class="btn pri" id="a">Study again</button></div></div>';$('#a').onclick=words;return}
+const w=Q[i],opts=sh([w,...sh(W.filter(x=>x!=w)).slice(0,3)]);
+$('#view').innerHTML=fr(`<div class="card"><div class="meter"><i style="width:${i/Q.length*100}%"></i></div><p class="sub">Question ${i+1} of ${Q.length} · Score ${sc}</p><p class="sent"><b>Which word fits?</b><br>${w[1]}<br><mark>Example: ${w[2]}</mark></p><div class="row" id="o">${opts.map((x,k)=>`<button class="btn" data-k="${k}">${x[0]}</button>`).join('')}</div><div class="fb" id="fb"></div><div class="row"><button class="btn pri hide" id="nx">Next →</button></div></div>`);
+document.querySelectorAll('#o .btn').forEach(b=>b.onclick=()=>{const x=opts[+b.dataset.k],ok=x==w;if(ok)sc++;document.querySelectorAll('#o .btn').forEach(y=>y.disabled=true);b.classList.add(ok?'go':'no');const f=$('#fb');f.className='fb show '+(ok?'ok':'bad');f.textContent=ok?'✅ Correct!':'❌ It’s “'+w[0]+'”.';owl(ok?'happy':'oops',ok?'<b class="t">'+P()+'</b><b>'+w[0]+'</b>: '+w[1]+' ('+w[3]+').':'<b class="t">Let’s learn from this! 🦉</b>You picked <b>'+x[0]+'</b>, which means: '+x[1]+'<br>But this describes <b>'+w[0]+'</b>: '+w[1]+'<br>Example: '+w[2]+' ('+w[3]+').');$('#nx').classList.remove('hide')});
+$('#nx').onclick=()=>{i++;draw()}};draw()};
+const list=()=>{$('#view').innerHTML=fr('<div class="row"><button class="btn pri" id="tm">Test me ▶</button></div><div class="opgrid" style="margin-top:12px">'+W.map((w,i)=>'<div class="op" data-i="'+i+'" style="--c:var(--blue);cursor:pointer"><h3>'+w[0]+'</h3>'+(open[i]?'<div class="ex">'+w[1]+'</div><div class="ex"><mark>'+w[2]+'</mark> '+w[3]+'</div>':'<div class="res">Tap to see the meaning</div>')+'</div>').join('')+'</div>');
+$('#tm').onclick=test;document.querySelectorAll('.op').forEach(c=>c.onclick=()=>{const i=+c.dataset.i;open[i]=!open[i];list();if(open[i])owl('','<b class="t">'+W[i][0]+'</b>'+W[i][1]+' Example: '+W[i][2]+' ('+W[i][3]+').')})};list()}
+go();
+</script>
+</body>
+</html>
